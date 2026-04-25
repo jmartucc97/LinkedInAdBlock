@@ -1,0 +1,45 @@
+/* LinkedIn Ad Block - block.css
+   Hides ads via CSS at document_start, before JS runs, to prevent flash of ad content */
+
+/* ── Sponsored feed posts ── */
+[data-id*="sponsored"],
+[data-urn*="sponsored"],
+li.occludable-update:has([data-urn*="sponsored"]),
+.feed-shared-update-v2:has(.update-components-actor__sub-description span[aria-hidden="true"]),
+.update-components-actor__sub-description:has(> li > span[aria-hidden="true"]) {
+  display: none !important;
+}
+
+/* ── "Promoted" label targets ── */
+.feed-shared-update-v2:has(.update-components-promo),
+.update-components-promo {
+  display: none !important;
+}
+
+/* ── Right sidebar ads ── */
+.ad-banner-container,
+.ad-banner,
+[class*="ad-slot"],
+[class*="ad_slot"],
+[data-ad-banner],
+.artdeco-card:has(.ad-banner-container),
+section.ad-banner-container,
+.profile-right-rail__ad,
+#ad_unit,
+[id^="ad_unit"],
+[id*="_ads_"],
+.ads-container {
+  display: none !important;
+}
+
+/* ── "LinkedIn Ads" widget in sidebar ── */
+[data-impression-id*="sponsored"],
+.artdeco-card:has([data-impression-id*="sponsored"]) {
+  display: none !important;
+}
+
+/* ── Promoted job listings in feed ── */
+.job-card-container--clickable:has(.job-card-container__footer-item--highlighted),
+.jobs-unified-top-card__promoted {
+  display: none !important;
+}
