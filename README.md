@@ -1,16 +1,12 @@
 # LinkedIn Ad Block
 
-A Chrome extension that blocks sponsored posts and display ads from your LinkedIn feed and sidebar.
+Linkedin is less like a job board and more a social media and as grarbage dump now, this will remove sponsored posts from your feed to diminish annoying advertisements and slop taking your time away.
 
 ## What it blocks
 - **Sponsored / Promoted posts** in your feed
-- **Display ads** in the right sidebar
-- **Promoted job listings** in the feed
 
 ## How it works
 - A CSS file injected at page load instantly hides known ad elements before they render
-- A MutationObserver watches for dynamically loaded ads as you scroll and hides those too
-- A counter in the popup tracks how many ads have been blocked this session
 - Toggle blocking on/off any time from the popup
 
 ## Installation
