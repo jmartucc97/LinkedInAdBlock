@@ -21,8 +21,4 @@ Linkedin is less like a job board and more a social media and as grarbage dump n
 5. Navigate to linkedin.com — ads will be blocked automatically
 
 ## Notes
-- LinkedIn occasionally updates its markup, which may require updating selectors in `content.js` and `block.css`
 - This extension only runs on `linkedin.com`
-
-## License
-MIT
