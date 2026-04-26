@@ -1,12 +1,8 @@
 // LinkedIn Ad Block - Content Script
+console.log('LinkedIn Ad Block content script loaded');
 
 let enabled = true;
 let blockedCount = 0;
-
-chrome.storage.local.get('enabled', (data) => {
-  enabled = data.enabled !== false;
-  if (enabled) init();
-});
 
 function hideAdPost(el) {
   let node = el;
@@ -24,7 +20,9 @@ function hideAdPost(el) {
     node = node.parentElement;
   }
 }
+
 function scanPage() {
+  console.log('scanning...', document.querySelectorAll('[componentkey]').length);
   if (!enabled) return;
   document.querySelectorAll('p.d12727d5, [componentkey]').forEach(el => {
     try {
@@ -35,21 +33,26 @@ function scanPage() {
     } catch(e) {}
   });
 }
+
 function init() {
-  let scanTimer = null;
-  const observer = new MutationObserver(() => {
-    if (scanTimer) clearTimeout(scanTimer);
-    scanTimer = setTimeout(() => scanPage(), 100);
-  });
+  console.log('init called, body:', document.body);
+
+  const observer = new MutationObserver(() => scanPage());
   observer.observe(document.body, { childList: true, subtree: true });
-
-  // Scan every second
-  setInterval(() => scanPage(), 1000);
-
-  setTimeout(() => scanPage(), 500);
-  setTimeout(() => scanPage(), 1500);
-  setTimeout(() => scanPage(), 3000);
+  window.addEventListener('scroll', () => scanPage(), { passive: true });
+  setInterval(scanPage, 1000);
+  scanPage();
 }
+
+if (document.body) {
+  init();
+} else {
+  document.addEventListener('DOMContentLoaded', init);
+}
+
+chrome.storage.local.get('enabled', (data) => {
+  enabled = data.enabled !== false;
+});
 
 chrome.runtime.onMessage.addListener((msg) => {
   if (msg.type === 'SET_ENABLED') {
@@ -65,3 +68,5 @@ chrome.runtime.onMessage.addListener((msg) => {
     }
   }
 });
+
+console.log('end of script reached');
