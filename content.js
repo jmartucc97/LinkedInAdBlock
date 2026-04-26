@@ -22,12 +22,11 @@ function hideAdPost(el) {
 }
 
 function scanPage() {
-  console.log('scanning...', document.querySelectorAll('[componentkey]').length);
   if (!enabled) return;
   document.querySelectorAll('p.d12727d5, [componentkey]').forEach(el => {
     try {
       const text = (el.textContent || '').trim().toLowerCase();
-      if (text === 'promoted' || text.startsWith('promoted by')) {
+      if (text.startsWith('promoted')) {
         hideAdPost(el);
       }
     } catch(e) {}
@@ -35,8 +34,6 @@ function scanPage() {
 }
 
 function init() {
-  console.log('init called, body:', document.body);
-
   const observer = new MutationObserver(() => scanPage());
   observer.observe(document.body, { childList: true, subtree: true });
   window.addEventListener('scroll', () => scanPage(), { passive: true });
@@ -68,5 +65,3 @@ chrome.runtime.onMessage.addListener((msg) => {
     }
   }
 });
-
-console.log('end of script reached');
