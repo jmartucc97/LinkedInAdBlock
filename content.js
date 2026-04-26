@@ -12,7 +12,7 @@ function hideAdPost(el) {
   let node = el;
   for (let i = 0; i < 20; i++) {
     if (!node || node === document.body) break;
-    if (node.className && node.className.includes('_774d721f')) {
+    if (node.getAttribute && node.getAttribute('role') === 'listitem') {
       if (!node.dataset.liabHidden) {
         node.style.setProperty('display', 'none', 'important');
         node.dataset.liabHidden = '1';
@@ -26,19 +26,26 @@ function hideAdPost(el) {
 }
 function scanPage() {
   if (!enabled) return;
-  document.querySelectorAll('[componentkey]').forEach(el => {
+  document.querySelectorAll('p.d12727d5, [componentkey]').forEach(el => {
     try {
-      if (el.textContent.trim() === 'Promoted') {
+      const text = (el.textContent || '').trim().toLowerCase();
+      if (text === 'promoted' || text.startsWith('promoted by')) {
         hideAdPost(el);
       }
     } catch(e) {}
   });
 }
-
 function init() {
   const observer = new MutationObserver(() => scanPage());
   observer.observe(document.body, { childList: true, subtree: true });
-  scanPage();
+  
+  // Keep scanning every 2 seconds for the first 30 seconds
+  let attempts = 0;
+  const interval = setInterval(() => {
+    scanPage();
+    attempts++;
+    if (attempts >= 15) clearInterval(interval);
+  }, 2000);
 }
 
 chrome.runtime.onMessage.addListener((msg) => {
