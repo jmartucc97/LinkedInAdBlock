@@ -36,16 +36,19 @@ function scanPage() {
   });
 }
 function init() {
-  const observer = new MutationObserver(() => scanPage());
+  let scanTimer = null;
+  const observer = new MutationObserver(() => {
+    if (scanTimer) clearTimeout(scanTimer);
+    scanTimer = setTimeout(() => scanPage(), 100);
+  });
   observer.observe(document.body, { childList: true, subtree: true });
-  
-  // Keep scanning every 2 seconds for the first 30 seconds
-  let attempts = 0;
-  const interval = setInterval(() => {
-    scanPage();
-    attempts++;
-    if (attempts >= 15) clearInterval(interval);
-  }, 2000);
+
+  // Scan every second
+  setInterval(() => scanPage(), 1000);
+
+  setTimeout(() => scanPage(), 500);
+  setTimeout(() => scanPage(), 1500);
+  setTimeout(() => scanPage(), 3000);
 }
 
 chrome.runtime.onMessage.addListener((msg) => {
