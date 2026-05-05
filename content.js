@@ -1,5 +1,4 @@
 // LinkedIn Ad Block - Content Script
-console.log('LinkedIn Ad Block content script loaded');
 
 let enabled = true;
 let blockedCount = 0;
@@ -21,14 +20,59 @@ function hideAdPost(el) {
   }
 }
 
+function hideSidebarAd(el) {
+  let node = el;
+  for (let i = 0; i < 10; i++) {
+    if (!node || node === document.body) break;
+    if (node.dataset && node.dataset.liabHidden) return;
+    if (node.tagName === 'SECTION' || node.tagName === 'LI' ||
+        (node.tagName === 'DIV' && node.offsetHeight > 50 && node.offsetWidth > 100)) {
+      node.style.setProperty('display', 'none', 'important');
+      node.dataset.liabHidden = '1';
+      blockedCount++;
+      chrome.runtime.sendMessage({ type: 'AD_BLOCKED', count: blockedCount });
+      return;
+    }
+    node = node.parentElement;
+  }
+}
+
 function scanPage() {
   if (!enabled) return;
+
+  // Block feed promoted posts
   document.querySelectorAll('p.d12727d5, [componentkey]').forEach(el => {
     try {
       const text = (el.textContent || '').trim().toLowerCase();
       if (text.startsWith('promoted')) {
         hideAdPost(el);
       }
+    } catch(e) {}
+  });
+
+  // Block sidebar ads by iframe title
+  document.querySelectorAll('iframe[title="advertisement"]').forEach(el => {
+    try {
+      hideSidebarAd(el);
+    } catch(e) {}
+  });
+
+  // Block sidebar ads by componentkey
+  document.querySelectorAll('[componentkey*="feed_ad"]').forEach(el => {
+    try {
+      if (!el.dataset.liabHidden) {
+        el.style.setProperty('display', 'none', 'important');
+        el.dataset.liabHidden = '1';
+        blockedCount++;
+        chrome.runtime.sendMessage({ type: 'AD_BLOCKED', count: blockedCount });
+      }
+    } catch(e) {}
+  });
+
+  // Block promoted badge sidebar ads
+  document.querySelectorAll('[data-testid="promoted-badge"]').forEach(el => {
+    try {
+      hideSidebarAd(el);
     } catch(e) {}
   });
 }
